@@ -34,11 +34,14 @@ public class StudentCardUI : MonoBehaviour
         // tombol pilih siswa
         selectButton.onClick.RemoveAllListeners();
 
+        StudentData selectedData = currentData;
+
+        selectButton.onClick.RemoveAllListeners();
+
         selectButton.onClick.AddListener(() =>
         {
-            manager.SelectStudent(currentData);
+            manager.SelectStudent(selectedData);
         });
-
         // tombol edit
         editButton.onClick.RemoveAllListeners();
 
@@ -86,6 +89,8 @@ public class StudentCardUI : MonoBehaviour
             nameInputField.text;
 
         nameInputField.interactable = false;
+
+        manager.SaveStudentDatabase();
 
         manager.RefreshStudentList();
     }

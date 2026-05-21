@@ -339,70 +339,32 @@ public class QuizManager : MonoBehaviour
             options[randomIndex] = temp;
         }
     }
- void SaveStudentScore()
+void SaveStudentScore()
 {
-    ScoreDatabase db;
-
-    // Kalau sudah ada data lama
-    if (PlayerPrefs.HasKey("ScoreDB"))
+    // cek siswa aktif
+    if (StudentManager.currentStudent == null)
     {
-        string oldJson =
-            PlayerPrefs.GetString("ScoreDB");
-
-        db =
-            JsonUtility.FromJson<ScoreDatabase>(oldJson);
-
-        // Kalau null
-        if (db == null)
-        {
-            db = new ScoreDatabase();
-        }
-    }
-    else
-    {
-        db = new ScoreDatabase();
+        Debug.LogError("CURRENT STUDENT NULL");
+        return;
     }
 
-    // CEK apakah siswa sudah ada
-    bool studentFound = false;
+    Debug.Log(
+        "SAVE SCORE KE: " +
+        StudentManager.currentStudent.studentName
+    );
 
-    foreach (StudentScoreData data in db.scores)
-    {
-        if (data.studentName == currentStudentName)
-        {
-            // Update nilai lama
-            data.score = correctCount;
+    // simpan nilai
+    StudentManager.currentStudent.scores.Add(correctCount);
 
-            studentFound = true;
+    Debug.Log(
+        "TOTAL SCORE SEKARANG: " +
+        StudentManager.currentStudent.scores.Count
+    );
 
-            break;
-        }
-    }
+    // save database
+    FindObjectOfType<StudentManager>()
+        .SaveStudentDatabase();
 
-    // Kalau siswa belum ada
-    if (!studentFound)
-    {
-        StudentScoreData newData =
-            new StudentScoreData();
-
-        newData.studentName =
-            currentStudentName;
-
-        newData.score =
-            correctCount;
-
-        db.scores.Add(newData);
-    }
-
-    // Convert ke JSON
-    string newJson =
-        JsonUtility.ToJson(db);
-
-    // Simpan
-    PlayerPrefs.SetString("ScoreDB", newJson);
-
-    PlayerPrefs.Save();
-
-    Debug.Log("DATA NILAI TERSIMPAN");
+    Debug.Log("NILAI TERSIMPAN");
 }
 }

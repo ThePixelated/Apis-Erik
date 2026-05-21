@@ -21,11 +21,13 @@ public class StudentManager : MonoBehaviour
     public static StudentData currentStudent;
 
     void Start()
-    {
-        RefreshStudentList();
+{
+    LoadStudentDatabase();
 
-        dropdownPanel.SetActive(false);
-    }
+    RefreshStudentList();
+
+    dropdownPanel.SetActive(false);
+}
 
     // OPEN DROPDOWN
     public void OpenDropdown()
@@ -57,6 +59,7 @@ public class StudentManager : MonoBehaviour
             studentName;
 
         database.students.Add(newStudent);
+        SaveStudentDatabase();
 
         addNameInput.text = "";
 
@@ -90,17 +93,22 @@ public class StudentManager : MonoBehaviour
     }
 
     // SELECT
-    public void SelectStudent(
-        StudentData data
-    )
-    {
-        currentStudent = data;
+ public void SelectStudent(
+    StudentData data
+)
+{
+    currentStudent = data;
 
-        selectedNameText.text =
-            data.studentName;
+    Debug.Log(
+        "SELECT SISWA: " +
+        data.studentName
+    );
 
-        dropdownPanel.SetActive(false);
-    }
+    selectedNameText.text =
+        data.studentName;
+
+    dropdownPanel.SetActive(false);
+}
 
     // DELETE
     public void DeleteStudent(
@@ -109,6 +117,44 @@ public class StudentManager : MonoBehaviour
     {
         database.students.Remove(data);
 
+        SaveStudentDatabase();
+
         RefreshStudentList();
     }
+
+    public void SaveStudentDatabase()
+{
+    StudentDatabase db =
+        new StudentDatabase();
+
+    db.students =
+        database.students;
+
+    string json =
+        JsonUtility.ToJson(db);
+
+    PlayerPrefs.SetString(
+        "StudentDB",
+        json
+    );
+
+    PlayerPrefs.Save();
+}
+
+void LoadStudentDatabase()
+{
+    if (PlayerPrefs.HasKey("StudentDB"))
+    {
+        string json =
+            PlayerPrefs.GetString("StudentDB");
+
+        StudentDatabase db =
+            JsonUtility.FromJson<StudentDatabase>(
+                json
+            );
+
+        database.students =
+            db.students;
+    }
+}
 }
