@@ -18,18 +18,37 @@ public class StudentManager : MonoBehaviour
     [Header("PANEL")]
     public GameObject dropdownPanel;
 
+    [Header("DELETE PANEL")]
+    public GameObject deletePanel;
+
+    // SISWA YANG DIPILIH
     public static StudentData currentStudent;
 
+    // SISWA YANG MAU DIHAPUS
+    private StudentData selectedDeleteData;
+
     void Start()
-{
-    LoadStudentDatabase();
+    {
+        LoadStudentDatabase();
 
-    RefreshStudentList();
+        RefreshStudentList();
 
-    dropdownPanel.SetActive(false);
-}
+        // tutup dropdown
+        if (dropdownPanel != null)
+        {
+            dropdownPanel.SetActive(false);
+        }
 
+        // tutup panel delete
+        if (deletePanel != null)
+        {
+            deletePanel.SetActive(false);
+        }
+    }
+
+    // =========================
     // OPEN DROPDOWN
+    // =========================
     public void OpenDropdown()
     {
         dropdownPanel.SetActive(true);
@@ -37,45 +56,58 @@ public class StudentManager : MonoBehaviour
         RefreshStudentList();
     }
 
+    // =========================
     // CLOSE DROPDOWN
+    // =========================
     public void CloseDropdown()
     {
         dropdownPanel.SetActive(false);
     }
 
-    // CREATE DATA
+    // =========================
+    // ADD STUDENT
+    // =========================
     public void AddStudent()
     {
         string studentName =
             addNameInput.text;
 
-        if (studentName == "")
+        // cek kosong
+        if (string.IsNullOrEmpty(studentName))
             return;
 
+        // buat data baru
         StudentData newStudent =
             new StudentData();
 
         newStudent.studentName =
             studentName;
 
+        // tambah database
         database.students.Add(newStudent);
+
+        // save
         SaveStudentDatabase();
 
+        // reset input
         addNameInput.text = "";
 
+        // refresh
         RefreshStudentList();
     }
 
-    // REFRESH UI
+    // =========================
+    // REFRESH LIST
+    // =========================
     public void RefreshStudentList()
     {
-        // clear old card
+        // hapus card lama
         foreach (Transform child in contentParent)
         {
             Destroy(child.gameObject);
         }
 
-        // generate new card
+        // generate card baru
         foreach (StudentData data
             in database.students)
         {
@@ -92,69 +124,125 @@ public class StudentManager : MonoBehaviour
         }
     }
 
-    // SELECT
- public void SelectStudent(
-    StudentData data
-)
-{
-    currentStudent = data;
-
-    Debug.Log(
-        "SELECT SISWA: " +
-        data.studentName
-    );
-
-    selectedNameText.text =
-        data.studentName;
-
-    dropdownPanel.SetActive(false);
-}
-
-    // DELETE
-    public void DeleteStudent(
+    // =========================
+    // SELECT STUDENT
+    // =========================
+    public void SelectStudent(
         StudentData data
     )
     {
-        database.students.Remove(data);
+        currentStudent = data;
 
-        SaveStudentDatabase();
+        Debug.Log(
+            "SELECT SISWA: " +
+            data.studentName
+        );
 
-        RefreshStudentList();
+        // tampilkan nama
+        selectedNameText.text =
+            data.studentName;
+
+        // tutup dropdown
+        dropdownPanel.SetActive(false);
     }
 
-    public void SaveStudentDatabase()
-{
-    StudentDatabase db =
-        new StudentDatabase();
-
-    db.students =
-        database.students;
-
-    string json =
-        JsonUtility.ToJson(db);
-
-    PlayerPrefs.SetString(
-        "StudentDB",
-        json
-    );
-
-    PlayerPrefs.Save();
-}
-
-void LoadStudentDatabase()
-{
-    if (PlayerPrefs.HasKey("StudentDB"))
+    // =========================
+    // OPEN DELETE PANEL
+    // =========================
+    public void OpenDeletePanel(
+        StudentData data
+    )
     {
-        string json =
-            PlayerPrefs.GetString("StudentDB");
+        selectedDeleteData = data;
 
-        StudentDatabase db =
-            JsonUtility.FromJson<StudentDatabase>(
-                json
+        if (deletePanel != null)
+        {
+            deletePanel.SetActive(true);
+        }
+    }
+
+    // =========================
+    // CONFIRM DELETE
+    // =========================
+    public void ConfirmDelete()
+    {
+        if (selectedDeleteData != null)
+        {
+            database.students.Remove(
+                selectedDeleteData
             );
 
-        database.students =
-            db.students;
+            SaveStudentDatabase();
+
+            RefreshStudentList();
+
+            Debug.Log(
+                "DATA DIHAPUS: " +
+                selectedDeleteData.studentName
+            );
+
+            selectedDeleteData = null;
+        }
+
+        // tutup panel
+        if (deletePanel != null)
+        {
+            deletePanel.SetActive(false);
+        }
     }
-}
+
+    // =========================
+    // CANCEL DELETE
+    // =========================
+    public void CancelDelete()
+    {
+        selectedDeleteData = null;
+
+        if (deletePanel != null)
+        {
+            deletePanel.SetActive(false);
+        }
+    }
+
+    // =========================
+    // SAVE DATABASE
+    // =========================
+    public void SaveStudentDatabase()
+    {
+        StudentDatabase db =
+            new StudentDatabase();
+
+        db.students =
+            database.students;
+
+        string json =
+            JsonUtility.ToJson(db);
+
+        PlayerPrefs.SetString(
+            "StudentDB",
+            json
+        );
+
+        PlayerPrefs.Save();
+    }
+
+    // =========================
+    // LOAD DATABASE
+    // =========================
+    void LoadStudentDatabase()
+    {
+        if (PlayerPrefs.HasKey("StudentDB"))
+        {
+            string json =
+                PlayerPrefs.GetString("StudentDB");
+
+            StudentDatabase db =
+                JsonUtility.FromJson<StudentDatabase>(
+                    json
+                );
+
+            database.students =
+                db.students;
+        }
+    }
 }

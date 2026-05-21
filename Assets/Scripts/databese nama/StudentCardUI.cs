@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class StudentCardUI : MonoBehaviour
 {
@@ -16,7 +15,9 @@ public class StudentCardUI : MonoBehaviour
 
     private StudentManager manager;
 
-    // Setup data card
+    // =========================
+    // SETUP CARD
+    // =========================
     public void Setup(
         StudentData data,
         StudentManager studentManager
@@ -26,23 +27,33 @@ public class StudentCardUI : MonoBehaviour
 
         manager = studentManager;
 
+        // tampilkan nama
         nameInputField.text =
             currentData.studentName;
 
+        // default gabisa edit
         nameInputField.interactable = false;
 
-        // tombol pilih siswa
+        // =========================
+        // SELECT SISWA
+        // =========================
         selectButton.onClick.RemoveAllListeners();
 
         StudentData selectedData = currentData;
 
-        selectButton.onClick.RemoveAllListeners();
-
         selectButton.onClick.AddListener(() =>
         {
+            Debug.Log(
+                "BUTTON CLICK: " +
+                selectedData.studentName
+            );
+
             manager.SelectStudent(selectedData);
         });
-        // tombol edit
+
+        // =========================
+        // EDIT NAMA
+        // =========================
         editButton.onClick.RemoveAllListeners();
 
         editButton.onClick.AddListener(() =>
@@ -50,27 +61,45 @@ public class StudentCardUI : MonoBehaviour
             StartEdit();
         });
 
-        // tombol delete
+        // =========================
+        // DELETE SISWA
+        // =========================
         deleteButton.onClick.RemoveAllListeners();
 
         deleteButton.onClick.AddListener(() =>
         {
-            manager.DeleteStudent(currentData);
+            Debug.Log(
+                "OPEN DELETE PANEL: " +
+                currentData.studentName
+            );
+
+            manager.OpenDeletePanel(currentData);
         });
 
-        // submit enter
+        // =========================
+        // ENTER SUBMIT
+        // =========================
+        nameInputField.onSubmit.RemoveAllListeners();
+
         nameInputField.onSubmit.AddListener(delegate
         {
             FinishEdit();
         });
 
-        // klik luar input
+        // =========================
+        // KLIK LUAR INPUT
+        // =========================
+        nameInputField.onDeselect.RemoveAllListeners();
+
         nameInputField.onDeselect.AddListener(delegate
         {
             FinishEdit();
         });
     }
 
+    // =========================
+    // START EDIT
+    // =========================
     void StartEdit()
     {
         nameInputField.interactable = true;
@@ -80,6 +109,9 @@ public class StudentCardUI : MonoBehaviour
         nameInputField.Select();
     }
 
+    // =========================
+    // FINISH EDIT
+    // =========================
     void FinishEdit()
     {
         if (!nameInputField.interactable)

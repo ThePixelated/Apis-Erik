@@ -1,262 +1,319 @@
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class QuizManager : MonoBehaviour
 {
-    [Header("VIDEO")]
-    public VideoPlayer questionVideoPlayer;
-
-    [Header("QUESTION UI")]
-    public TMP_Text questionText;
-
-    [Header("ANSWER BUTTONS")]
-    public Button[] answerButtons;
-    public TMP_Text[] answerTexts;
-
-    [Header("PROGRESS UI")]
-    public Slider progressBar;
-    public TMP_Text soalCounterText;
-
-    [Header("RESULT PANEL")]
-    public GameObject correctPanel;
-    public GameObject wrongPanel;
-
-    [Header("CORRECT PANEL UI")]
-    public TMP_Text correctAnswerText;
-    public UnityEngine.UI.Image correctVisualImage;
-
-    [Header("FINISH PANEL")]
-    public GameObject finishPanel;
-
-    [Header("FINISH RESULT UI")]
-    public TMP_Text finalScoreText;
-    public TMP_Text benarText;
-    public TMP_Text salahText;
-    public TMP_Text studentNameText;
-
-    [Header("QUESTION DATABASE")]
+    [Header("DATABASE")]
     public SO_QuestionData dbsoalkuis;
 
-    private List<QuestionData> questions;
+    [Header("UI SOAL")]
+    public TMP_Text questionText;
+
+    public Button[] answerButtons;
+
+    public TMP_Text[] answerTexts;
+
+    public VideoPlayer videoPlayer;
+
+    [Header("PANEL")]
+    public GameObject correctPanel;
+
+    public GameObject wrongPanel;
+
+    public GameObject finishPanel;
+
+    [Header("RESULT UI")]
+    public TMP_Text scoreText;
+
+    public TMP_Text correctText;
+
+    public TMP_Text wrongText;
+
+    public TMP_Text studentNameText;
+
+    private List<QuestionData> questions =
+        new List<QuestionData>();
 
     private int currentQuestionIndex = 0;
 
-    // SCORE SYSTEM
     private int score = 0;
-    private int correctCount = 0;
-    private int wrongCount = 0;
 
-    // NAMA SISWA
-    private string currentStudentName;
+    private int correctAnswerCount = 0;
 
+    private int wrongAnswerCount = 0;
+
+    // =========================
+    // START
+    // =========================
     void Start()
     {
-
-        questions = dbsoalkuis.questions;
-
-        // Sembunyikan panel
-        if (correctPanel != null)
+        if (dbsoalkuis != null)
         {
-            correctPanel.SetActive(false);
+            questions =
+                dbsoalkuis.questions;
         }
+
+        if (correctPanel != null)
+            correctPanel.SetActive(false);
 
         if (wrongPanel != null)
-        {
             wrongPanel.SetActive(false);
-        }
 
         if (finishPanel != null)
-        {
             finishPanel.SetActive(false);
-        }
 
-        // Cek soal
-        if (questions.Count == 0)
+        if (questions.Count <= 0)
         {
-            Debug.LogError("Questions masih kosong!");
+            Debug.LogError(
+                "DATABASE SOAL KOSONG"
+            );
+
             return;
         }
 
-        // Acak soal
         ShuffleQuestions();
     }
 
-    // DIPANGGIL SAAT MULAI KUIS
-   public void StartQuiz()
-{
-    // Ambil nama TERBARU
-    currentStudentName =
-        PlayerPrefs.GetString("SelectedStudent", "Unknown");
-
-    ShowQuestion();
-}
-
-    void ShowQuestion()
+    // =========================
+    // START QUIZ
+    // =========================
+    public void StartQuiz()
     {
-        // Aktifkan kembali button
-        foreach (Button btn in answerButtons)
+        // VALIDASI NAMA
+        if (StudentManager.currentStudent == null)
         {
-            btn.interactable = true;
+            Debug.LogError(
+                "NAMA SISWA BELUM DIPILIH"
+            );
+
+            return;
         }
 
-        // Ambil soal sekarang
-        QuestionData q = questions[currentQuestionIndex];
+        Debug.Log(
+            "START QUIZ: " +
+            StudentManager
+            .currentStudent
+            .studentName
+        );
 
-        // Acak jawaban
-        ShuffleOptions(q.options);
+        currentQuestionIndex = 0;
 
-        // ===== VIDEO =====
-        if (questionVideoPlayer != null)
+        score = 0;
+
+        correctAnswerCount = 0;
+
+        wrongAnswerCount = 0;
+
+        ShowQuestion();
+    }
+
+    // =========================
+    // SHUFFLE SOAL
+    // =========================
+    void ShuffleQuestions()
+    {
+        for (
+            int i = 0;
+            i < questions.Count;
+            i++
+        )
         {
-            questionVideoPlayer.clip = q.questionVideo;
-            questionVideoPlayer.isLooping = true;
+            QuestionData temp =
+                questions[i];
 
-            // Cek apakah object video aktif
-            if (questionVideoPlayer.gameObject.activeInHierarchy)
-            {
-                questionVideoPlayer.Play();
-            }
-        }
+            int randomIndex =
+                Random.Range(
+                    i,
+                    questions.Count
+                );
 
-        // ===== QUESTION TEXT =====
-        if (questionText != null)
-        {
-            questionText.text = "Apakah ini?";
-        }
+            questions[i] =
+                questions[randomIndex];
 
-        // ===== ANSWER OPTIONS =====
-        for (int i = 0; i < answerButtons.Length; i++)
-        {
-            if (i < q.options.Length)
-            {
-                answerButtons[i].gameObject.SetActive(true);
-
-                // Set text jawaban
-                if (answerTexts[i] != null)
-                {
-                    answerTexts[i].text = q.options[i];
-                }
-
-                // Hapus listener lama
-                answerButtons[i].onClick.RemoveAllListeners();
-
-                int index = i;
-
-                // Tambah listener baru
-                answerButtons[i].onClick.AddListener(() =>
-                {
-                    CheckAnswer(q.options[index]);
-                });
-            }
-            else
-            {
-                answerButtons[i].gameObject.SetActive(false);
-            }
-        }
-
-        // ===== PROGRESS BAR =====
-        if (progressBar != null)
-        {
-            progressBar.value =
-                (float)(currentQuestionIndex + 1) / questions.Count;
-        }
-
-        // ===== COUNTER TEXT =====
-        if (soalCounterText != null)
-        {
-            soalCounterText.text =
-                "Soal " + (currentQuestionIndex + 1) +
-                " dari " + questions.Count;
+            questions[randomIndex] =
+                temp;
         }
     }
 
-    void CheckAnswer(string selectedAnswer)
+    // =========================
+    // TAMPILKAN SOAL
+    // =========================
+    void ShowQuestion()
     {
-        string correctAnswer =
-            questions[currentQuestionIndex].correctAnswer;
+        QuestionData currentQuestion =
+            questions[currentQuestionIndex];
 
-        // Disable semua button
-        foreach (Button btn in answerButtons)
+        // SOAL
+        questionText.text =
+            currentQuestion.questionName;
+
+        // VIDEO
+        if (
+            videoPlayer != null &&
+            currentQuestion.questionVideo != null
+        )
         {
-            btn.interactable = false;
+            videoPlayer.gameObject
+                .SetActive(true);
+
+            videoPlayer.clip =
+                currentQuestion.questionVideo;
+
+            videoPlayer.Play();
+        }
+        else
+        {
+            if (videoPlayer != null)
+            {
+                videoPlayer.Stop();
+
+                videoPlayer.gameObject
+                    .SetActive(false);
+            }
         }
 
-        // ===== BENAR =====
-        if (selectedAnswer == correctAnswer)
-        {
-            Debug.Log("BENAR");
+        // RANDOM JAWABAN
+        List<string> shuffledAnswers =
+            new List<string>();
 
-            // Tambah score
+        shuffledAnswers.Add(
+            currentQuestion.correctAnswer
+        );
+
+        foreach (
+            string answer
+            in currentQuestion.options
+        )
+        {
+            shuffledAnswers.Add(answer);
+        }
+
+        // SHUFFLE
+        for (
+            int i = 0;
+            i < shuffledAnswers.Count;
+            i++
+        )
+        {
+            string temp =
+                shuffledAnswers[i];
+
+            int randomIndex =
+                Random.Range(
+                    i,
+                    shuffledAnswers.Count
+                );
+
+            shuffledAnswers[i] =
+                shuffledAnswers[randomIndex];
+
+            shuffledAnswers[randomIndex] =
+                temp;
+        }
+
+        // SET BUTTON
+        for (
+            int i = 0;
+            i < answerButtons.Length;
+            i++
+        )
+        {
+            string answer =
+                shuffledAnswers[i];
+
+            answerTexts[i].text =
+                answer;
+
+            answerButtons[i]
+                .onClick
+                .RemoveAllListeners();
+
+            answerButtons[i]
+                .onClick
+                .AddListener(() =>
+                {
+                    CheckAnswer(answer);
+                });
+
+            answerButtons[i]
+                .interactable = true;
+        }
+    }
+
+    // =========================
+    // CHECK JAWABAN
+    // =========================
+    void CheckAnswer(
+        string selectedAnswer
+    )
+    {
+        QuestionData currentQuestion =
+            questions[currentQuestionIndex];
+
+        // BENAR
+        if (
+            selectedAnswer ==
+            currentQuestion.correctAnswer
+        )
+        {
             score += 10;
 
-            // Tambah jumlah benar
-            correctCount++;
+            correctAnswerCount++;
 
-            // Tampilkan panel benar
             if (correctPanel != null)
             {
                 correctPanel.SetActive(true);
             }
-
-            // Set text jawaban
-            if (correctAnswerText != null)
-            {
-                correctAnswerText.text =
-                    "Bagus! Ini adalah \"" +
-                    correctAnswer + "\"";
-            }
-
-            // Set gambar
-            if (correctVisualImage != null)
-            {
-                correctVisualImage.sprite =
-                    questions[currentQuestionIndex].correctImage;
-            }
         }
-
-        // ===== SALAH =====
+        // SALAH
         else
         {
-            Debug.Log("SALAH");
+            wrongAnswerCount++;
 
-            // Tambah jumlah salah
-            wrongCount++;
-
-            // Tampilkan panel salah
             if (wrongPanel != null)
             {
                 wrongPanel.SetActive(true);
             }
         }
+
+        // DISABLE BUTTON
+        foreach (
+            Button btn
+            in answerButtons
+        )
+        {
+            btn.interactable = false;
+        }
     }
 
-    // BUTTON LANJUT
+    // =========================
+    // LANJUT
+    // =========================
     public void ContinueQuiz()
     {
-        // Tutup panel
         if (correctPanel != null)
-        {
             correctPanel.SetActive(false);
-        }
 
         if (wrongPanel != null)
-        {
             wrongPanel.SetActive(false);
-        }
 
-        // Next soal
         NextQuestion();
     }
 
+    // =========================
+    // NEXT QUESTION
+    // =========================
     void NextQuestion()
     {
         currentQuestionIndex++;
 
-        // Kalau masih ada soal
-        if (currentQuestionIndex < questions.Count)
+        if (
+            currentQuestionIndex <
+            questions.Count
+        )
         {
             ShowQuestion();
         }
@@ -266,105 +323,93 @@ public class QuizManager : MonoBehaviour
         }
     }
 
+    // =========================
+    // FINISH QUIZ
+    // =========================
     void FinishQuiz()
     {
         Debug.Log("QUIZ SELESAI");
-            SaveStudentScore();
 
-        Debug.Log("Score: " + score);
-
-        // Stop video
-        if (questionVideoPlayer != null)
-        {
-            questionVideoPlayer.Stop();
-        }
-
-        // Tampilkan finish panel
         if (finishPanel != null)
         {
             finishPanel.SetActive(true);
         }
 
-        // Set nilai akhir
-        if (finalScoreText != null)
+        // SCORE
+        if (scoreText != null)
         {
-            finalScoreText.text = score.ToString();
+            scoreText.text =
+                score.ToString();
         }
 
-        // Set jumlah benar
-        if (benarText != null)
+        // BENAR
+        if (correctText != null)
         {
-            benarText.text = correctCount.ToString();
+            correctText.text =
+                correctAnswerCount
+                .ToString();
         }
 
-        // Set jumlah salah
-        if (salahText != null)
+        // SALAH
+        if (wrongText != null)
         {
-            salahText.text = wrongCount.ToString();
+            wrongText.text =
+                wrongAnswerCount
+                .ToString();
         }
 
-        // Tampilkan nama siswa
-        if (studentNameText != null)
+        // NAMA SISWA
+        if (
+            studentNameText != null &&
+            StudentManager.currentStudent
+            != null
+        )
         {
-            studentNameText.text = currentStudentName;
+            studentNameText.text =
+                StudentManager
+                .currentStudent
+                .studentName;
         }
+
+        SaveStudentScore();
     }
 
-    // Acak urutan soal
-    void ShuffleQuestions()
+    // =========================
+    // SAVE SCORE
+    // =========================
+    void SaveStudentScore()
     {
-        for (int i = 0; i < questions.Count; i++)
+        if (
+            StudentManager.currentStudent
+            == null
+        )
         {
-            QuestionData temp = questions[i];
+            Debug.LogError(
+                "CURRENT STUDENT NULL"
+            );
 
-            int randomIndex =
-                Random.Range(i, questions.Count);
+            return;
+        }
 
-            questions[i] = questions[randomIndex];
-            questions[randomIndex] = temp;
+        Debug.Log(
+            "SAVE SCORE: " +
+            StudentManager
+            .currentStudent
+            .studentName
+        );
+
+        StudentManager
+            .currentStudent
+            .scores
+            .Add(score);
+
+        StudentManager manager =
+            FindFirstObjectByType
+            <StudentManager>();
+
+        if (manager != null)
+        {
+            manager.SaveStudentDatabase();
         }
     }
-
-    // Acak posisi jawaban
-    void ShuffleOptions(string[] options)
-    {
-        for (int i = 0; i < options.Length; i++)
-        {
-            string temp = options[i];
-
-            int randomIndex =
-                Random.Range(i, options.Length);
-
-            options[i] = options[randomIndex];
-            options[randomIndex] = temp;
-        }
-    }
-void SaveStudentScore()
-{
-    // cek siswa aktif
-    if (StudentManager.currentStudent == null)
-    {
-        Debug.LogError("CURRENT STUDENT NULL");
-        return;
-    }
-
-    Debug.Log(
-        "SAVE SCORE KE: " +
-        StudentManager.currentStudent.studentName
-    );
-
-    // simpan nilai
-    StudentManager.currentStudent.scores.Add(correctCount);
-
-    Debug.Log(
-        "TOTAL SCORE SEKARANG: " +
-        StudentManager.currentStudent.scores.Count
-    );
-
-    // save database
-    FindObjectOfType<StudentManager>()
-        .SaveStudentDatabase();
-
-    Debug.Log("NILAI TERSIMPAN");
-}
 }
