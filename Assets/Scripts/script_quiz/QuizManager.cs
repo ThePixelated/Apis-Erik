@@ -6,7 +6,7 @@ using UnityEngine.Video;
 
 public class QuizManager : MonoBehaviour
 {
-    [Header("DATABASE")]
+    [Header("DATABASE SOAL")]
     public SO_QuestionData dbsoalkuis;
 
     [Header("UI SOAL")]
@@ -25,6 +25,12 @@ public class QuizManager : MonoBehaviour
 
     public GameObject finishPanel;
 
+    [Header("WARNING PANEL")]
+    public GameObject warningPilihNamaPanel;
+
+    [Header("SCENE LOADER")]
+    public SceneLoader sceneLoader;
+
     [Header("RESULT UI")]
     public TMP_Text scoreText;
 
@@ -33,6 +39,8 @@ public class QuizManager : MonoBehaviour
     public TMP_Text wrongText;
 
     public TMP_Text studentNameText;
+
+    // =====================================
 
     private List<QuestionData> questions =
         new List<QuestionData>();
@@ -45,60 +53,78 @@ public class QuizManager : MonoBehaviour
 
     private int wrongAnswerCount = 0;
 
-    // =========================
-    // START
-    // =========================
+    [HideInInspector]
+    public bool isQuizStarted = false;
+
+    // =====================================
+
     void Start()
     {
-        if (dbsoalkuis != null)
+        // PANEL
+        if (warningPilihNamaPanel != null)
         {
-            questions =
-                dbsoalkuis.questions;
+            warningPilihNamaPanel.SetActive(false);
         }
 
         if (correctPanel != null)
-            correctPanel.SetActive(false);
-
-        if (wrongPanel != null)
-            wrongPanel.SetActive(false);
-
-        if (finishPanel != null)
-            finishPanel.SetActive(false);
-
-        if (questions.Count <= 0)
         {
-            Debug.LogError(
-                "DATABASE SOAL KOSONG"
-            );
-
-            return;
+            correctPanel.SetActive(false);
         }
 
-        ShuffleQuestions();
+        if (wrongPanel != null)
+        {
+            wrongPanel.SetActive(false);
+        }
+
+        if (finishPanel != null)
+        {
+            finishPanel.SetActive(false);
+        }
+
+        // LOAD DATABASE
+        if (dbsoalkuis != null)
+        {
+            questions =
+                new List<QuestionData>(
+                    dbsoalkuis.questions
+                );
+        }
     }
 
-    // =========================
-    // START QUIZ
-    // =========================
+    // =====================================
+
     public void StartQuiz()
     {
         // VALIDASI NAMA
-        if (StudentManager.currentStudent == null)
+        if (
+            StudentManager.currentStudent == null ||
+            string.IsNullOrEmpty(
+                StudentManager
+                .currentStudent
+                .studentName
+            )
+        )
         {
-            Debug.LogError(
-                "NAMA SISWA BELUM DIPILIH"
-            );
+            Debug.Log("BELUM PILIH NAMA");
+
+            if (warningPilihNamaPanel != null)
+            {
+                warningPilihNamaPanel.SetActive(true);
+            }
 
             return;
         }
 
-        Debug.Log(
-            "START QUIZ: " +
-            StudentManager
-            .currentStudent
-            .studentName
-        );
+        // TUTUP WARNING
+        if (warningPilihNamaPanel != null)
+        {
+            warningPilihNamaPanel.SetActive(false);
+        }
 
+        // STATUS QUIZ
+        isQuizStarted = true;
+
+        // RESET QUIZ
         currentQuestionIndex = 0;
 
         score = 0;
@@ -107,28 +133,30 @@ public class QuizManager : MonoBehaviour
 
         wrongAnswerCount = 0;
 
+        // SHUFFLE SOAL
+        ShuffleQuestions();
+
+        // PINDAH PANEL
+        if (sceneLoader != null)
+        {
+            sceneLoader.SwitchPanel();
+        }
+
+        // TAMPILKAN SOAL
         ShowQuestion();
     }
 
-    // =========================
-    // SHUFFLE SOAL
-    // =========================
+    // =====================================
+
     void ShuffleQuestions()
     {
-        for (
-            int i = 0;
-            i < questions.Count;
-            i++
-        )
+        for (int i = 0; i < questions.Count; i++)
         {
             QuestionData temp =
                 questions[i];
 
             int randomIndex =
-                Random.Range(
-                    i,
-                    questions.Count
-                );
+                Random.Range(i, questions.Count);
 
             questions[i] =
                 questions[randomIndex];
@@ -138,30 +166,43 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    // =========================
-    // TAMPILKAN SOAL
-    // =========================
+    // =====================================
+
     void ShowQuestion()
     {
+        if (questions.Count <= 0)
+            return;
+
         QuestionData currentQuestion =
             questions[currentQuestionIndex];
 
-        // SOAL
-        questionText.text =
-            currentQuestion.questionName;
-
+        // =====================================
         // VIDEO
+        // =====================================
+
         if (
             videoPlayer != null &&
             currentQuestion.questionVideo != null
         )
         {
-            videoPlayer.gameObject
-                .SetActive(true);
+            // AKTIFKAN OBJECT VIDEO
+            if (
+                !videoPlayer.gameObject
+                .activeSelf
+            )
+            {
+                videoPlayer.gameObject
+                    .SetActive(true);
+            }
 
+            // AKTIFKAN COMPONENT VIDEO PLAYER
+            videoPlayer.enabled = true;
+
+            // SET VIDEO
             videoPlayer.clip =
                 currentQuestion.questionVideo;
 
+            // PLAY VIDEO
             videoPlayer.Play();
         }
         else
@@ -169,63 +210,33 @@ public class QuizManager : MonoBehaviour
             if (videoPlayer != null)
             {
                 videoPlayer.Stop();
-
-                videoPlayer.gameObject
-                    .SetActive(false);
             }
         }
 
-        // RANDOM JAWABAN
-        List<string> shuffledAnswers =
-            new List<string>();
+        // =====================================
+        // TEXT SOAL
+        // =====================================
 
-        shuffledAnswers.Add(
-            currentQuestion.correctAnswer
-        );
-
-        foreach (
-            string answer
-            in currentQuestion.options
-        )
+        if (questionText != null)
         {
-            shuffledAnswers.Add(answer);
+            questionText.text =
+                currentQuestion.questionName;
         }
 
-        // SHUFFLE
+        // =====================================
+        // JAWABAN
+        // =====================================
+
         for (
             int i = 0;
-            i < shuffledAnswers.Count;
+            i < answerTexts.Length;
             i++
         )
         {
-            string temp =
-                shuffledAnswers[i];
-
-            int randomIndex =
-                Random.Range(
-                    i,
-                    shuffledAnswers.Count
-                );
-
-            shuffledAnswers[i] =
-                shuffledAnswers[randomIndex];
-
-            shuffledAnswers[randomIndex] =
-                temp;
-        }
-
-        // SET BUTTON
-        for (
-            int i = 0;
-            i < answerButtons.Length;
-            i++
-        )
-        {
-            string answer =
-                shuffledAnswers[i];
-
             answerTexts[i].text =
-                answer;
+                currentQuestion.options[i];
+
+            int index = i;
 
             answerButtons[i]
                 .onClick
@@ -235,17 +246,16 @@ public class QuizManager : MonoBehaviour
                 .onClick
                 .AddListener(() =>
                 {
-                    CheckAnswer(answer);
+                    CheckAnswer(
+                        currentQuestion
+                        .options[index]
+                    );
                 });
-
-            answerButtons[i]
-                .interactable = true;
         }
     }
 
-    // =========================
-    // CHECK JAWABAN
-    // =========================
+    // =====================================
+
     void CheckAnswer(
         string selectedAnswer
     )
@@ -278,36 +288,22 @@ public class QuizManager : MonoBehaviour
                 wrongPanel.SetActive(true);
             }
         }
-
-        // DISABLE BUTTON
-        foreach (
-            Button btn
-            in answerButtons
-        )
-        {
-            btn.interactable = false;
-        }
     }
 
-    // =========================
-    // LANJUT
-    // =========================
+    // =====================================
+
     public void ContinueQuiz()
     {
         if (correctPanel != null)
+        {
             correctPanel.SetActive(false);
+        }
 
         if (wrongPanel != null)
+        {
             wrongPanel.SetActive(false);
+        }
 
-        NextQuestion();
-    }
-
-    // =========================
-    // NEXT QUESTION
-    // =========================
-    void NextQuestion()
-    {
         currentQuestionIndex++;
 
         if (
@@ -323,12 +319,11 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    // =========================
-    // FINISH QUIZ
-    // =========================
+    // =====================================
+
     void FinishQuiz()
     {
-        Debug.Log("QUIZ SELESAI");
+        isQuizStarted = false;
 
         if (finishPanel != null)
         {
@@ -361,8 +356,7 @@ public class QuizManager : MonoBehaviour
         // NAMA SISWA
         if (
             studentNameText != null &&
-            StudentManager.currentStudent
-            != null
+            StudentManager.currentStudent != null
         )
         {
             studentNameText.text =
@@ -371,12 +365,12 @@ public class QuizManager : MonoBehaviour
                 .studentName;
         }
 
+        // SAVE SCORE
         SaveStudentScore();
     }
 
-    // =========================
-    // SAVE SCORE
-    // =========================
+    // =====================================
+
     void SaveStudentScore()
     {
         if (
@@ -391,25 +385,27 @@ public class QuizManager : MonoBehaviour
             return;
         }
 
-        Debug.Log(
-            "SAVE SCORE: " +
-            StudentManager
-            .currentStudent
-            .studentName
-        );
-
         StudentManager
             .currentStudent
             .scores
             .Add(score);
 
         StudentManager manager =
-            FindFirstObjectByType
-            <StudentManager>();
+            FindFirstObjectByType<StudentManager>();
 
         if (manager != null)
         {
             manager.SaveStudentDatabase();
+        }
+    }
+
+    // =====================================
+
+    public void CloseWarningPanel()
+    {
+        if (warningPilihNamaPanel != null)
+        {
+            warningPilihNamaPanel.SetActive(false);
         }
     }
 }

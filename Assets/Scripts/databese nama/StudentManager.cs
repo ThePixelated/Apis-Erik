@@ -128,23 +128,25 @@ public class StudentManager : MonoBehaviour
     // SELECT STUDENT
     // =========================
     public void SelectStudent(
-        StudentData data
-    )
+    StudentData data
+)
+{
+    currentStudent = data;
+
+    Debug.Log(
+        "Selected Student: " +
+        data.studentName
+    );
+
+    selectedNameText.text =
+        data.studentName;
+
+    // TUTUP DROPDOWN
+    if (dropdownPanel != null)
     {
-        currentStudent = data;
-
-        Debug.Log(
-            "SELECT SISWA: " +
-            data.studentName
-        );
-
-        // tampilkan nama
-        selectedNameText.text =
-            data.studentName;
-
-        // tutup dropdown
         dropdownPanel.SetActive(false);
     }
+}
 
     // =========================
     // OPEN DELETE PANEL
