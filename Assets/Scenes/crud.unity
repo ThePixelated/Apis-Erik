@@ -1924,7 +1924,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &218041306
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4657,7 +4657,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: -820, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1638.6001, y: 1588.8258}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &553523129
 MonoBehaviour:
@@ -5100,9 +5100,9 @@ RectTransform:
   - {fileID: 1184661928}
   m_Father: {fileID: 553523128}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 819.3, y: -1076.275}
   m_SizeDelta: {x: 1638.6, y: 425.1016}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &589288747
@@ -16077,9 +16077,9 @@ RectTransform:
   - {fileID: 1311031297}
   m_Father: {fileID: 553523128}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 819.3, y: -769.0972}
   m_SizeDelta: {x: 1638.6, y: 89.45398}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1713435498
@@ -19513,9 +19513,9 @@ RectTransform:
   - {fileID: 668060125}
   m_Father: {fileID: 553523128}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 819.30005, y: -354.7351}
   m_SizeDelta: {x: 1638.6001, y: 639.4702}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2065528401
@@ -19863,6 +19863,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
   prevScene: {fileID: 11400000, guid: 96463f6aaa382e94f9fdda24a738e149, type: 2}
+  currentPanel: {fileID: 0}
+  targetPanel: {fileID: 0}
+  quizPanel: {fileID: 0}
+  inputNamaPanel: {fileID: 0}
+  studentManager: {fileID: 0}
 --- !u!1 &2078650992
 GameObject:
   m_ObjectHideFlags: 0

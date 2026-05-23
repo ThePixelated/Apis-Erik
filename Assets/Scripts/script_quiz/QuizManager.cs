@@ -7,7 +7,10 @@ using UnityEngine.Video;
 public class QuizManager : MonoBehaviour
 {
     [Header("DATABASE SOAL")]
+    public int maksimalsoal;
     public SO_QuestionData dbsoalkuis;
+     private List<QuestionData> rawquestions =
+        new List<QuestionData>();
 
     [Header("UI SOAL")]
     public TMP_Text questionText;
@@ -16,10 +19,17 @@ public class QuizManager : MonoBehaviour
 
     public TMP_Text[] answerTexts;
 
+      [Header("PROGRESS UI")]
+    public Slider progressBar;
+    public TMP_Text soalCounterText;
     public VideoPlayer videoPlayer;
 
     [Header("PANEL")]
     public GameObject correctPanel;
+
+     [Header("CORRECT PANEL UI")]
+    public TMP_Text correctAnswerText;
+    public UnityEngine.UI.Image correctVisualImage;
 
     public GameObject wrongPanel;
 
@@ -39,6 +49,8 @@ public class QuizManager : MonoBehaviour
     public TMP_Text wrongText;
 
     public TMP_Text studentNameText;
+
+    public TMP_Text JumlahSoalText;
 
     // =====================================
 
@@ -60,6 +72,7 @@ public class QuizManager : MonoBehaviour
 
     void Start()
     {
+        JumlahSoalText.text= "JUMLAH SOAL\n"+maksimalsoal.ToString();
         // PANEL
         if (warningPilihNamaPanel != null)
         {
@@ -164,6 +177,12 @@ public class QuizManager : MonoBehaviour
             questions[randomIndex] =
                 temp;
         }
+        rawquestions=questions;
+        questions=new List<QuestionData>();
+        for (int i = 0; i < maksimalsoal; i++)
+        {
+            questions.Add(rawquestions[i]);
+        }
     }
 
     // =====================================
@@ -252,7 +271,14 @@ public class QuizManager : MonoBehaviour
                     );
                 });
         }
+          progressBar.value =
+                (float)(currentQuestionIndex + 1) / questions.Count;
+                 soalCounterText.text =
+                "Soal " + (currentQuestionIndex + 1) +
+                " dari " + questions.Count;
+        
     }
+    
 
     // =====================================
 
@@ -276,6 +302,20 @@ public class QuizManager : MonoBehaviour
             if (correctPanel != null)
             {
                 correctPanel.SetActive(true);
+            }
+                 // Set text jawaban
+            if (correctAnswerText != null)
+            {
+                correctAnswerText.text =
+                    "Bagus! Ini adalah \"" +
+                    questions[currentQuestionIndex].correctAnswer + "\"";
+            }
+
+            // Set gambar
+            if (correctVisualImage != null)
+            {
+                correctVisualImage.sprite =
+                    questions[currentQuestionIndex].correctImage;
             }
         }
         // SALAH

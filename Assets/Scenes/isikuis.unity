@@ -4368,7 +4368,7 @@ VideoPlayer:
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
-  m_TargetTexture: {fileID: 0}
+  m_TargetTexture: {fileID: 8400000, guid: 2957c497a25874a409362280845add10, type: 2}
   m_TimeReference: 0
   m_TargetMaterialRenderer: {fileID: 0}
   m_TargetMaterialProperty: <noninit>
@@ -4404,6 +4404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e0c39f3751b3504a96492cc79d1dc62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::QuizUIManager
+  maksimalsoal: 2
   dbsoalkuis: {fileID: 11400000, guid: 62771bc35eea53a449dbc3a535cd4662, type: 2}
   questionText: {fileID: 0}
   answerButtons:
@@ -4414,16 +4415,21 @@ MonoBehaviour:
   - {fileID: 907369994}
   - {fileID: 493124293}
   - {fileID: 1032409301}
+  progressBar: {fileID: 1210328091}
+  soalCounterText: {fileID: 287799493}
   videoPlayer: {fileID: 1106098149}
   correctPanel: {fileID: 172826436}
+  correctAnswerText: {fileID: 59361011}
+  correctVisualImage: {fileID: 606707605}
   wrongPanel: {fileID: 1300924205}
   finishPanel: {fileID: 2076840439}
   warningPilihNamaPanel: {fileID: 1062834946}
   sceneLoader: {fileID: 692545542}
-  scoreText: {fileID: 0}
-  correctText: {fileID: 0}
-  wrongText: {fileID: 0}
+  scoreText: {fileID: 495063963}
+  correctText: {fileID: 118030961}
+  wrongText: {fileID: 316345843}
   studentNameText: {fileID: 1288295752}
+  JumlahSoalText: {fileID: 249258715}
   isQuizStarted: 0
 --- !u!1 &785544030
 GameObject:
@@ -5576,8 +5582,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 30.283}
-  m_SizeDelta: {x: 643.4348, y: 643.4348}
+  m_AnchoredPosition: {x: 0, y: 90.746}
+  m_SizeDelta: {x: 522.5087, y: 522.5087}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1106098147
 MonoBehaviour:
@@ -5591,7 +5597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 0b7e3b698eafe8947a8a2e1620152ab2, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -5599,7 +5605,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 2957c497a25874a409362280845add10, type: 2}
+  m_Texture: {fileID: 8400000, guid: 618ec1c4a3e0fc741a3270e1bb4aa968, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -5626,7 +5632,7 @@ VideoPlayer:
   m_TargetCameraAlpha: 1
   m_TargetCamera3DLayout: 0
   m_TargetCamera: {fileID: 0}
-  m_TargetTexture: {fileID: 8400000, guid: 2957c497a25874a409362280845add10, type: 2}
+  m_TargetTexture: {fileID: 8400000, guid: 618ec1c4a3e0fc741a3270e1bb4aa968, type: 2}
   m_TimeReference: 0
   m_TargetMaterialRenderer: {fileID: 0}
   m_TargetMaterialProperty: <noninit>
