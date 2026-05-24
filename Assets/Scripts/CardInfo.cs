@@ -61,17 +61,8 @@ public class CardInfo : MonoBehaviour
 
     public void DeleteCardBtn()
     {
-        Debug.LogWarning($"BEFORE - DB Length: {GameManager.instance.m_DBKalimat.DatabaseKalimat.Count}");
+        m_cardManager.ShowDeletePopup(this);
 
-        m_cardManager.DeletePressed(judulCard);
-        m_cardManager.DeleteProtocol(PrimaryKey);
-
-        Debug.LogWarning($"DB Length: {GameManager.instance.m_DBKalimat.DatabaseKalimat.Count}");
-
-        string path = Path.Combine(Application.persistentDataPath, "database.json");
-
-        string json = JsonUtility.ToJson(GameManager.instance.m_DBKalimat);
-        File.WriteAllText(path, json);
     }
 
     public void EditCardBtn()

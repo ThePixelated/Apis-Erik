@@ -13,6 +13,9 @@ public class CardManager : MonoBehaviour
     [SerializeField] private GameObject objekPage;
     [SerializeField] private GameObject editPage;
     [SerializeField] private GameObject prefabCard;
+
+    [Header("Delete Popup")]
+    [SerializeField] private GameObject deletePopup;
     [SerializeField] private Transform parentCard;
 
     [Header("Data Config")]
@@ -23,6 +26,7 @@ public class CardManager : MonoBehaviour
 
     public DB_Kalimat TargetData { get; set; }
     public int TargetPrimaryKey { get; private set; }
+    private CardInfo selectedDeleteCard;
 
     public event Action<int> onCardPressed;
     public event Action<int> onEditPressed;
@@ -47,11 +51,61 @@ public class CardManager : MonoBehaviour
 
     public void DeletePressed(string judulObjek)
     {
+        
         if (onDeletePressed != null)
         {
             onDeletePressed(judulObjek);
         }
+
     }
+    public void ShowDeletePopup(CardInfo card)
+{
+    selectedDeleteCard = card;
+
+    deletePopup.SetActive(true);
+
+    Debug.Log("Delete popup opened");
+}
+
+public void CancelDelete()
+{
+    selectedDeleteCard = null;
+
+    deletePopup.SetActive(false);
+
+    Debug.Log("Delete cancelled");
+}
+
+public void ConfirmDelete()
+{
+    if (selectedDeleteCard == null)
+    {
+        Debug.LogWarning("No selected card!");
+        return;
+    }
+
+    Debug.LogWarning($"BEFORE - DB Length: {GameManager.instance.m_DBKalimat.DatabaseKalimat.Count}");
+
+    DeletePressed(selectedDeleteCard.DataKalimat.JudulObjek);
+
+    DeleteProtocol(selectedDeleteCard.PrimaryKey);
+
+    Debug.LogWarning($"AFTER - DB Length: {GameManager.instance.m_DBKalimat.DatabaseKalimat.Count}");
+
+    string path = Path.Combine(Application.persistentDataPath, "database.json");
+
+    string json = JsonUtility.ToJson(GameManager.instance.m_DBKalimat);
+
+    File.WriteAllText(path, json);
+
+    deletePopup.SetActive(false);
+
+    selectedDeleteCard = null;
+
+    RefreshRender();
+
+    Debug.Log("Delete confirmed");
+}
 
     public void EnterSearchBarPressed()
     {
@@ -158,6 +212,7 @@ public class CardManager : MonoBehaviour
     public DB_Kalimat FetchData(int primaryKey)
     {
         Debug.LogWarning("Data being fetched");
+         TargetData = null;
 
         foreach (var item in cards_gObj)
         {

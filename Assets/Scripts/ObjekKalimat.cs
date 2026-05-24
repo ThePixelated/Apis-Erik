@@ -24,25 +24,37 @@ public class ObjekKalimat : MonoBehaviour
 
     private void InnitPage(int primaryKey)
     {
-        CreateEditData.Instance.BackBtnConfig(gambar);
-
+        if (CreateEditData.Instance != null)
+        {
+            CreateEditData.Instance.BackBtnConfig(gambar);
+        }
         Debug.Log("IP - Primarykey : " + primaryKey.ToString("X"));
 
         m_dataKalimat = m_cardManager.FetchData(primaryKey);
+        
+
 
         // retrive data dari folder berdasarkan imagepath
 
         //gambar = m_dataKalimat.Image;
+        if (m_dataKalimat == null)
+        {
+            Debug.LogError("Data kalimat NULL!");
+            return;
+        }
         objekKalimat.text = m_dataKalimat.JudulObjek;
         Debug.LogWarning(m_dataKalimat.ContohKalimat.Count);
-        for (int i = 0; i < m_dataKalimat.ContohKalimat.Count; i++)
+        
+        for (int i = 0; i < Mathf.Min(m_dataKalimat.ContohKalimat.Count, contohKalimat.Length); i++)
         {
             Debug.Log(m_dataKalimat.ContohKalimat[i]);
+
             contohKalimat[i].text = m_dataKalimat.ContohKalimat[i];
+
             Debug.LogWarning(contohKalimat[i].gameObject.name);
+
             contohKalimat[i].gameObject.SetActive(true);
         }
-
         gameObject.SetActive(true);
 
         StartCoroutine(m_cardManager.LoadImageFromLocal(m_dataKalimat.ImagePath, gambar));

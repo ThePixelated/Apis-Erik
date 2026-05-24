@@ -72,6 +72,7 @@ public class QuizManager : MonoBehaviour
 
     void Start()
     {
+        StudentManager.currentStudent=null;
         JumlahSoalText.text= "JUMLAH SOAL\n"+maksimalsoal.ToString();
         // PANEL
         if (warningPilihNamaPanel != null)

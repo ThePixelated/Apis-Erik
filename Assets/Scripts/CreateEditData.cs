@@ -179,6 +179,7 @@ public class CreateEditData : MonoBehaviour
 
     public void BackBtnConfig(RawImage gambars = null)
     {
+        if (gambars != null);
         RawImageReset(gambars);
 
         CleanUpInputField();
@@ -190,7 +191,7 @@ public class CreateEditData : MonoBehaviour
 
     public void ResetRectTransPosition()
     {
-        Vector3 returnPos = new Vector3(0, 0, 0);
+        Vector3 returnPos = new Vector3(300, 0, 0);
 
         content.position = returnPos;
     }
@@ -219,6 +220,14 @@ public class CreateEditData : MonoBehaviour
         if (string.IsNullOrEmpty(tempSelectedPath))
         {
             Debug.Log("No new image selected");
+
+            // IMPORTANT:
+            // kalau update dan ga pilih gambar baru,
+            // pertahankan gambar lama
+            if (targetDB != null)
+            {
+                Debug.Log("Keeping old image path: " + targetDB.ImagePath);
+            }
 
             string savePath = Path.Combine(
                 Application.persistentDataPath,

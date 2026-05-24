@@ -63,7 +63,10 @@ public class SO_CreateKalimat : ScriptableObject
         
         DB_Kalimat placeholderDB = targetDatabase; // !!! ada kemungkinan loss data !!!!
         //placeholderDB.PrimaryKey = CurrentPrimaryKeyVal;
-        placeholderDB.ImagePath = imagePath;
+        if (!string.IsNullOrEmpty(imagePath))
+        {
+            placeholderDB.ImagePath = imagePath;
+        }
         placeholderDB.JudulObjek = newJudulObjek.textComponent.text;
         placeholderDB.ContohKalimat = new List<string>();
 

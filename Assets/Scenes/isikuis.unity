@@ -2788,8 +2788,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b283117549592424886d4efc6d7d411b, type: 2}
+  m_sharedMaterial: {fileID: -4334521254916651911, guid: b283117549592424886d4efc6d7d411b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4732,8 +4732,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b283117549592424886d4efc6d7d411b, type: 2}
+  m_sharedMaterial: {fileID: -4334521254916651911, guid: b283117549592424886d4efc6d7d411b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4886,8 +4886,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 692545542}
         m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
-        m_MethodName: BackToInputNama
-        m_Mode: 1
+        m_MethodName: LoadScene
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5298,8 +5298,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b283117549592424886d4efc6d7d411b, type: 2}
+  m_sharedMaterial: {fileID: -4334521254916651911, guid: b283117549592424886d4efc6d7d411b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7500,7 +7500,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -864, y: -42.576}
-  m_SizeDelta: {x: 125, y: 122}
+  m_SizeDelta: {x: 159, y: 129}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1414237651
 MonoBehaviour:
@@ -7522,7 +7522,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5233346a2a2e46748b19ba4f593b408f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: da73336d3a320644ea208da57474bfba, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7593,7 +7593,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: quiz
+          m_StringArgument: isikuis
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!1 &1449565851
